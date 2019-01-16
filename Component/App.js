@@ -7,14 +7,12 @@
  */
 
 import React, { Component } from 'react';
-// import DateTimePicker from 'react-native-modal-datetime-picker'
-// import moment from 'moment'
 import Step1 from './Step1'
 import Step2 from './Step2'
 // import Step2 from './Step2'
 import Step3 from './Step3'
-
-
+import moment from 'moment'
+import {xethungmuibat,dataVehicle,xetaithungkin,xetaidonglanh} from './data'
 // import { createStackNavigator, createAppContainer } from 'react-navigation'
 // import {orderInfo} from '../Model/orderInfo'
 // import 'es6-symbol/implement';
@@ -27,6 +25,7 @@ class Step extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      isVisible: false,
       statusStep: 1,
       time: '',
       from: '',
@@ -37,18 +36,22 @@ class Step extends Component {
       vehicleSize: '',
       amount: '',
       step3: '',
-      step4: ''
+      step4: '',
+
     }
 
-
   }
-  // handleTimeValueChanged=(text)=>{
-  //   this.setState({
-  //     chosenDate : text
-  //   })
-  //   console.log(time)
-  //   var time = this.state.isVisible
-  // }
+  handleBackStep2=()=>{
+    this.setState({
+      statusStep: 1
+    })
+  }
+  handleBackStep3=()=>{
+    this.setState({
+      statusStep: 2
+    })
+  }
+
   handleFromValueChanged = (text) => {
     this.setState({
       from: text
@@ -77,27 +80,19 @@ class Step extends Component {
     this.setState({
       weight: text
     })
-    
+
   }
-  handleTempvehicleTypeValueChanged = (text) => {
+  handleVehicleSizeValueChanged = (option) => {
     this.setState({
-      tempvehicleType: text
+      vehicleSize: option.label
     })
-   }
-  handleVehicleSizeValueChanged = (text) => {
-    this.setState({
-      vehicleSize: text
-    })
-    
   }
   handleAmountValueChanged = (text) => {
     this.setState({
       amount: text
     })
-   }
-  
+  }
 
-  
   handleStatusStepChanged2 = () => {
     if (this.state.from == '') {
       alert('Bạn chưa nhập điểm đi')
@@ -114,19 +109,6 @@ class Step extends Component {
           this.setState({
             statusStep: 2
           })
-          // alert('Success')
-          // const order = new oderInfo ({
-          //   from: this.state.from,
-          //   to:this.state.to,
-          //   time: this.state.chosenDate,
-          //   items:this.state.items,
-          //   weight:this.state.weight,
-          //   tempvehicleType:this.state.tempvehicleType,//loại xe
-          //   vehicleSize:this.state.vehicleSize,
-          //   amount:this.state.amount,
-          // })
-          // const myJSON=JSON.stringify(order);
-          // alert(myJSON.fullOder);
         }
       }
 
@@ -148,56 +130,65 @@ class Step extends Component {
         }
         else {
           if (this.state.vehicleSize == '') {
-            alert('Bạn chưa nhập kích thước')
+            alert('Bạn chưa nhập trọng tải')
           }
-          else{
+          else {
             if (this.state.amount == '') {
               alert('Bạn chưa nhập số lượng')
             }
-            else{
+            else {
               this.setState({
                 statusStep: 3
               })
-              
+
 
             }
           }
-          
-          // alert('Success')
-          // const order = new oderInfo ({
-          //   from: this.state.from,
-          //   to:this.state.to,
-          //   time: this.state.chosenDate,
-          //   items:this.state.items,
-          //   weight:this.state.weight,
-          //   tempvehicleType:this.state.tempvehicleType,//loại xe
-          //   vehicleSize:this.state.vehicleSize,
-          //   amount:this.state.amount,
-          // })
-          // const myJSON=JSON.stringify(order);
-          // alert(myJSON.fullOder);
         }
       }
+    }
+  }
+  ShowPicker = () => {
+    this.setState({
+      isVisible: true
+    })
+  }
+  HidePicker = (datetime) => {
+    this.setState({
+      isVisible: false,
+      time: moment(datetime).format('HH:mm Ngày D-M-YYYY')
+
+    })
+  }
+  HandlePicker = (datetime) => {
+    this.setState({
+      isVisible: false,
+      time: moment(datetime).format('HH:mm Ngày D-M-YYYY')
+
+    })
+  }
 
 
-     }
-   }
+  handleTempvehicleTypeChanged = (option) => {
+    this.setState({ tempvehicleType: option.label })
+    console.log(this.state.tempvehicleType)
+  }
+  handleGetdata = () => {
+    if (this.state.tempvehicleType == 'Xe thùng mui bạt') {
+       return xethungmuibat;
+    } else {
+      if (this.state.tempvehicleType == 'Xe tải thùng kín') {
+       return xetaithungkin;
+      }
+      else{
+        if(this.state.tempvehicleType == 'Xe tải đông lạnh') {
+          return xetaidonglanh;
+        }
+      }
+    }
+    
+  }
   
-  // HandleSubmit=()=>{
-  //   const order = new orderInfo ({
-  //     from: this.state.from,
-  //     to:this.state.to,
-  //     time: this.state.chosenDate,
-  //     items:this.state.items,
-  //     weight:this.state.weight,
-  //     tempvehicleType:this.state.tempvehicleType,//loại xe
-  //     vehicleSize:this.state.vehicleSize,
-  //     amount:this.state.amount,
-  //   })
-  //   console.log(order.fullOrder)
-  //   // const myJSON=JSON.stringify(order.fullOrder);
-  //   // alert(myJSON);
-  // }
   render() {
 
     if (this.state.statusStep == 1) {
@@ -206,93 +197,61 @@ class Step extends Component {
           propFrom={this.state.from}
           propTo={this.state.to}
           propTime={this.state.time}
+          propisVisible={this.state.isVisible}
           onFromChanged={this.handleFromValueChanged}
           onToChanged={this.handleToValueChanged}
           onStatusStepChanged2={this.handleStatusStepChanged2}
           onTimeChanged={this.handleTimeValueChanged}
+          onHandlePicker={this.HandlePicker}
+          onShowPicker={this.ShowPicker}
+          onHidePicker={this.HidePicker}
         />
-        )
-        //   <View style={{ flex: 1, flexDirection: 'column', }}>
-        //   <View style={{ flex: 90, marginLeft: 20, marginTop: 50 }}>
-        //     <TextInput
-        //       style={{ fontSize: 18 , marginLeft:40}}
-        //       placeholder='Điểm đi'
-        //       onChangeText={(text) => {
-        //         this.setState({
-        //           from: text
-        //         })
-        //       }}
-
-        //     />
-        //     <TextInput
-        //       style={{ fontSize: 18 ,marginLeft:40}}
-        //       placeholder='Điểm đến'
-        //       onChangeText={(text) => {
-        //         this.setState({
-        //           to: text
-        //         })
-        //       }}
-
-        //     />
-
-        //     <DateTimePicker
-        //     isVisible={this.state.isVisible}
-        //     onConfirm={this.HandelPicker}
-        //     onCancel={this.HidePicker}
-        //     />
-        //     <TouchableOpacity onPress={this.ShowPicker} style={{flexDirection:'row'}}>
-        //       <Image source={require('../resouces/lichh.jpg')} style={{width:25,height:25}}/>
-        //       <Text style={{fontSize:17,marginLeft:20}}>{this.state.chosenDate}</Text>
-        //     </TouchableOpacity>
-
-
-        //   </View>
-        //   <View style={{ flex: 10, alignItems: 'center' }}>
-        //     <TouchableOpacity style={{
-        //       backgroundColor: 'rebeccapurple', borderRadius: 15, width: 100, alignItems: 'center'
-        //     }} onPress={this.HandleStep}>
-        //       <Text style={{ color: 'white' }}>Tiếp tục</Text>
-        //     </TouchableOpacity>
-        //   </View>
-
-        // </View>
-      
+      )
     }
 
     if (this.state.statusStep == 2) {
       return (
         <Step2
+          propDataVehicle={dataVehicle}
+          // propDataVehicleSize={dataVehicleSize}
+          propDataVehicleSize={this.handleGetdata()}
+          propTempvehicleType={this.state.tempvehicleType}
+          propTempvehicleSize={this.state.vehicleSize}
+          onHandleBack2={this.handleBackStep2}
           onItemsChanged={this.handleItemsValueChanged}
           onWeightChanged={this.handleWeightValueChanged}
-          onTempvehicleTypeChanged={this.handleTempvehicleTypeValueChanged}
           onVehicleSizeChanged={this.handleVehicleSizeValueChanged}
           onAmountChanged={this.handleAmountValueChanged}
           onStatusStepChanged3={this.handleStatusStepChanged3}
-        
+          onTempvehicleTypeChanged={this.handleTempvehicleTypeChanged}
+
         />
-        
+
       )
     }
     if (this.state.statusStep == 3) {
       return (
         <Step3
-        propFrom={this.state.from}
-        propTo={this.state.to}
-        propTime={this.state.time}
-        propItem={this.state.items}
-        propWeight={this.state.weight}
-        propTemvehicleType={this.state.tempvehicleType}
-        propVehicleSize={this.state.vehicleSize}
-        propAmount={this.state.amount}
+          propFrom={this.state.from}
+          propTo={this.state.to}
+          propTime={this.state.time}
+          propItems={this.state.items}
+          propWeight={this.state.weight}
+          propTemvehicleType={this.state.tempvehicleType}
+          propVehicleSize={this.state.vehicleSize}
+          propAmount={this.state.amount}
+          onHandleBack3={this.handleBackStep3}
+
         // onSubmit= {this.HanleSubmit}
         />
       )
     }
-    
-    
+
+
   }
-  
+
 }
+
 
 // export default App;
 
